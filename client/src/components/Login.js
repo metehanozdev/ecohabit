@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../services/auth.js";
 import { useUserContext } from "../contexts/UserContext.js";
-import { useLoginContext } from "../contexts/LoginContext.js";
 import { useRegisterContext } from "../contexts/RegisterContext.js";
 import Alert from "./Alert.js";
 
@@ -33,29 +32,22 @@ const LoginBox = styled(Box)(({ theme }) => ({
 const Login = ({ toggleForm }) => {
   const { setToken } = useUserContext();
 
-  const {
-    loginData,
-    setLoginData,
-    setLoginPending,
-    setLoggedIn,
-    loginFailMessage,
-    setLoginFailMessage,
-  } = useLoginContext();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginPending, setLoginPending] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [loginFailMessage, setLoginFailMessage] = useState(null);
 
   const { registerSuccessMessageVisible, setRegisterSuccessMessageVisible } =
     useRegisterContext();
 
   const navigate = useNavigate();
 
-  const clearData = () => {
-    setLoginData((prevState) => ({ ...prevState, password: "" }));
-  };
 
   const handleChange = (e) => {
-    setLoginData((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
+    const { name, value } = e.target;
+    if (name === 'email') setEmail(value);
+    else if (name === 'password') setPassword(value);
   };
 
   const handleSnackbarClose = (event, reason) => {
@@ -69,11 +61,10 @@ const Login = ({ toggleForm }) => {
     e.preventDefault();
     setLoginPending(true);
     try {
-      const response = await login(loginData);
+      const response = await login({ email, password });
       const responseStatus = response.status;
-      const token = await response.data.token;
-
       if (responseStatus === 200) {
+        const token = await response.data.token;
         setLoggedIn(true);
         setToken(token);
         navigate("/");
@@ -84,11 +75,9 @@ const Login = ({ toggleForm }) => {
       }
     } catch (error) {
       console.log(error);
-      setLoginFailMessage(
-        "An unexpected error occurred - please try again later"
-      );
+      setLoginFailMessage("An unexpected error occurred - please try again later");
     } finally {
-      clearData();
+      setPassword('');
       setLoginPending(false);
     }
   };

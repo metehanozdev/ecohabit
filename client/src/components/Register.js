@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { register } from "../services/auth.js";
-import { useRegisterContext } from "../contexts/RegisterContext.js";
 import Alert from "./Alert.js";
 
 import {
@@ -27,13 +26,13 @@ const RegisterBox = styled(Box)(({ theme }) => ({
 }));
 
 const Register = ({ toggleForm }) => {
-  const {
-    registerData,
-    setRegisterData,
-    setRegisterSuccessMessageVisible,
-    registerFailMessage,
-    setRegisterFailMessage,
-  } = useRegisterContext();
+  const [registerData, setRegisterData] = useState({
+    name: "",
+    email: "",
+    password: ""
+  });
+  const [registerPending, setRegisterPending] = useState(false);
+  const [registerFailMessage, setRegisterFailMessage] = useState("");
 
   const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -55,32 +54,30 @@ const Register = ({ toggleForm }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setRegisterPending(true);
     if (confirmPassword !== registerData.password) {
-      clearData();
-      setErr("Password does not match");
+      setRegisterPending(false);
+      setRegisterFailMessage("Password does not match");
       return;
     }
     if (!acceptTerms) {
-      setErr("You should accept the terms and conditions of use to register");
+      setRegisterPending(false);
+      setRegisterFailMessage("You should accept the terms and conditions of use to register");
       return;
     }
     try {
       const res = await register(registerData);
-
       if (res.status === 201) {
         toggleForm();
-        setRegisterSuccessMessageVisible(true);
       } else if (res.status === 400) {
         const json = await res.json();
         setRegisterFailMessage(json.error);
       }
     } catch (error) {
       console.error(error);
-      setRegisterFailMessage(
-        "An unexpected error occurred - please try again later"
-      );
+      setRegisterFailMessage("An unexpected error occurred - please try again later");
     } finally {
-      clearData();
+      setRegisterPending(false);
     }
   };
 
