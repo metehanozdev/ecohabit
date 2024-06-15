@@ -1,4 +1,6 @@
 import Routes from "./components/Routes";
+import { LoginContextProvider } from "./contexts/LoginContext.js";
+import { RegisterContextProvider } from "./contexts/RegisterContext";
 import { UserContextProvider } from "./contexts/UserContext";
 
 /**
@@ -8,9 +10,13 @@ import { UserContextProvider } from "./contexts/UserContext";
 function App() {
   return (
     <>
-      <UserContextProvider>
-        <Routes />
-      </UserContextProvider>
+      <RegisterContextProvider>
+        <LoginContextProvider>
+          <UserContextProvider>
+            <Routes />
+          </UserContextProvider>
+        </LoginContextProvider>
+      </RegisterContextProvider>
     </>
   );
 }
