@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../services/auth.js";
 import { useUserContext } from "../contexts/UserContext.js";
@@ -34,8 +34,6 @@ const Login = ({ toggleForm }) => {
   const { setToken } = useUserContext();
 
   const {
-    loginData,
-    setLoginData,
     setLoginPending,
     setLoggedIn,
     loginFailMessage,
@@ -47,15 +45,20 @@ const Login = ({ toggleForm }) => {
 
   const navigate = useNavigate();
 
-  const clearData = () => {
-    setLoginData((prevState) => ({ ...prevState, password: "" }));
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
   };
 
-  const handleChange = (e) => {
-    setLoginData((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  };
+
+  const clearData = () => {
+    setEmail('');
+    setPassword('');
   };
 
   const handleSnackbarClose = (event, reason) => {
@@ -67,6 +70,7 @@ const Login = ({ toggleForm }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const loginData = { email, password };
     setLoginPending(true);
     try {
       const response = await login(loginData);
@@ -123,8 +127,8 @@ const Login = ({ toggleForm }) => {
             size="small"
             variant="outlined"
             name="email"
-            value={loginData.email}
-            onChange={handleChange}
+            value={email}
+            onChange={handleEmailChange}
             label="Email address"
             type="email"
             autoComplete="off"
@@ -136,8 +140,8 @@ const Login = ({ toggleForm }) => {
             type="password"
             name="password"
             variant="outlined"
-            value={loginData.password}
-            onChange={handleChange}
+            value={password}
+            onChange={handlePasswordChange}
             label="Password"
             autoComplete="off"
             fullWidth
