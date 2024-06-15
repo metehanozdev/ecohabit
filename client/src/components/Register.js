@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { register } from "../services/auth.js";
-import { useRegisterContext } from "../contexts/RegisterContext.js";
 import Alert from "./Alert.js";
 
 import {
@@ -27,13 +26,6 @@ const RegisterBox = styled(Box)(({ theme }) => ({
 }));
 
 const Register = ({ toggleForm }) => {
-  const {
-    registerData,
-    setRegisterData,
-    setRegisterSuccessMessageVisible,
-    registerFailMessage,
-    setRegisterFailMessage,
-  } = useRegisterContext();
 
   const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -47,10 +39,11 @@ const Register = ({ toggleForm }) => {
   };
 
   const handleChange = (e) => {
-    setRegisterData((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
   };
 
   const handleSubmit = async (e) => {

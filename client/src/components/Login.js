@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../services/auth.js";
 import { useUserContext } from "../contexts/UserContext.js";
-import { useLoginContext } from "../contexts/LoginContext.js";
 import { useRegisterContext } from "../contexts/RegisterContext.js";
 import Alert from "./Alert.js";
 
@@ -32,70 +31,15 @@ const LoginBox = styled(Box)(({ theme }) => ({
 
 const Login = ({ toggleForm }) => {
   const { setToken } = useUserContext();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const {
-    loginData,
-    setLoginData,
-    setLoginPending,
-    setLoggedIn,
-    loginFailMessage,
-    setLoginFailMessage,
-  } = useLoginContext();
 
   const { registerSuccessMessageVisible, setRegisterSuccessMessageVisible } =
     useRegisterContext();
 
   const navigate = useNavigate();
 
-  const clearData = () => {
-    setLoginData((prevState) => ({ ...prevState, password: "" }));
-  };
-
-  const handleChange = (e) => {
-    setLoginData((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setRegisterSuccessMessageVisible(false);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoginPending(true);
-    try {
-      const response = await login(loginData);
-      const responseStatus = response.status;
-      const token = await response.data.token;
-
-      if (responseStatus === 200) {
-        setLoggedIn(true);
-        setToken(token);
-        navigate("/");
-      } else if (responseStatus === 403) {
-        setLoginFailMessage("User does not exist");
-      } else if (responseStatus === 400) {
-        setLoginFailMessage("Username or password is incorrect");
-      }
-    } catch (error) {
-      console.log(error);
-      setLoginFailMessage(
-        "An unexpected error occurred - please try again later"
-      );
-    } finally {
-      clearData();
-      setLoginPending(false);
-    }
-  };
-
-  useEffect(() => {
-    setLoginFailMessage(null);
-  }, []);
 
   return (
     <LoginBox>
@@ -123,8 +67,8 @@ const Login = ({ toggleForm }) => {
             size="small"
             variant="outlined"
             name="email"
-            value={loginData.email}
-            onChange={handleChange}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             label="Email address"
             type="email"
             autoComplete="off"
@@ -136,8 +80,8 @@ const Login = ({ toggleForm }) => {
             type="password"
             name="password"
             variant="outlined"
-            value={loginData.password}
-            onChange={handleChange}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             label="Password"
             autoComplete="off"
             fullWidth
