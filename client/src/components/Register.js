@@ -28,8 +28,6 @@ const RegisterBox = styled(Box)(({ theme }) => ({
 
 const Register = ({ toggleForm }) => {
   const {
-    registerData,
-    setRegisterData,
     setRegisterSuccessMessageVisible,
     registerFailMessage,
     setRegisterFailMessage,
@@ -39,23 +37,32 @@ const Register = ({ toggleForm }) => {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [err, setErr] = useState("");
 
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
   const clearData = () => {
-    setRegisterData((prevState) => ({ ...prevState, password: "" }));
+    setPassword("");
     setConfirmPassword("");
     setAcceptTerms(false);
     setErr("");
   };
 
-  const handleChange = (e) => {
-    setRegisterData((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
+  const handleNameChange = (event) => {
+    setName(event.target.value);
+  };
+
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (confirmPassword !== registerData.password) {
+    if (confirmPassword !== password) {
       clearData();
       setErr("Password does not match");
       return;
@@ -64,8 +71,13 @@ const Register = ({ toggleForm }) => {
       setErr("You should accept the terms and conditions of use to register");
       return;
     }
+    const formData = {
+      name: name,
+      email: email,
+      password: password
+    };
     try {
-      const res = await register(registerData);
+      const res = await register(formData);
 
       if (res.status === 201) {
         toggleForm();
@@ -100,8 +112,8 @@ const Register = ({ toggleForm }) => {
             size="small"
             variant="outlined"
             name="name"
-            value={registerData.name}
-            onChange={handleChange}
+            value={name}
+            onChange={handleNameChange}
             label="Name"
             type="text"
             autoComplete="off"
@@ -112,8 +124,8 @@ const Register = ({ toggleForm }) => {
             size="small"
             variant="outlined"
             name="email"
-            value={registerData.email}
-            onChange={handleChange}
+            value={email}
+            onChange={handleEmailChange}
             label="Email address"
             type="email"
             autoComplete="off"
@@ -125,8 +137,8 @@ const Register = ({ toggleForm }) => {
             type="password"
             name="password"
             variant="outlined"
-            value={registerData.password}
-            onChange={handleChange}
+            value={password}
+            onChange={handlePasswordChange}
             label="Password"
             autoComplete="off"
             fullWidth
