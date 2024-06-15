@@ -22,7 +22,6 @@ import LoginPage from "../pages/LoginPage";
 import TermsConditionPage from "../pages/TermsConditionPage";
 import Demo from "../pages/Demo";
 import Logout from "./Logout";
-import PrivateRoute from './PrivateRoute';
 
 /*
  * Creating routes via createBrowserRouter method makes project ready for react-router-dom 6.4 data fetching.
@@ -37,9 +36,9 @@ const router = createBrowserRouter(
       <Route path="/locations" element={<LocationsPage />} />
       <Route path="/guides" element={<GuidesPage />} />
       <Route path="/about" element={<AboutPage />} />
-      <PrivateRoute path="/profile" element={<ProfilePage />} />
+      <Route path="/profile" element={<ProfilePage />} />
       <Route path="/login" element={<LoginPage />} />
-      <PrivateRoute path="/logout" element={<Logout />} />
+      <Route path="/logout" element={<Logout />} />
       <Route path="/terms" element={<TermsConditionPage />} />
       <Route path="/Demo" element={<Demo />} />
     </Route>
