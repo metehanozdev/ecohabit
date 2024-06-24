@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-import { useLoginContext } from "../contexts/LoginContext.js";
+import { UserContext } from "../contexts/UserContext.js";
 import { Adb as AdbIcon, Menu as MenuIcon } from "@mui/icons-material";
 import {
   AppBar,
@@ -27,7 +27,7 @@ function ResponsiveAppBar() {
     "Dashboard",
     "Login",
   ]);
-  const { loggedIn } = useLoginContext();
+  const { loggedIn } = useContext(UserContext);
 
   useEffect(() => {
     if (loggedIn) {
@@ -36,6 +36,7 @@ function ResponsiveAppBar() {
       setSettings([...settings.slice(0, settings.length - 1), "Login"]);
     }
   }, [loggedIn]);
+
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };

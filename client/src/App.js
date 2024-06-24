@@ -1,7 +1,6 @@
 import Routes from "./components/Routes";
-import { LoginContextProvider } from "./contexts/LoginContext.js";
-import { RegisterContextProvider } from "./contexts/RegisterContext";
 import { UserContextProvider } from "./contexts/UserContext";
+import UserContextProvider from './context/UserContextProvider';
 
 /**
  *To avoid bloated App.js component, page routes created at Routes.js component.
@@ -9,15 +8,9 @@ import { UserContextProvider } from "./contexts/UserContext";
 
 function App() {
   return (
-    <>
-      <RegisterContextProvider>
-        <LoginContextProvider>
-          <UserContextProvider>
-            <Routes />
-          </UserContextProvider>
-        </LoginContextProvider>
-      </RegisterContextProvider>
-    </>
+    <UserContextProvider>
+      <Routes />
+    </UserContextProvider>
   );
 }
 

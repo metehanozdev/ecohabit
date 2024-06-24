@@ -1,9 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../services/auth.js";
-import { useUserContext } from "../contexts/UserContext.js";
-import { useLoginContext } from "../contexts/LoginContext.js";
-import { useRegisterContext } from "../contexts/RegisterContext.js";
 import Alert from "./Alert.js";
 
 import {
@@ -31,19 +28,11 @@ const LoginBox = styled(Box)(({ theme }) => ({
 }));
 
 const Login = ({ toggleForm }) => {
-  const { setToken } = useUserContext();
-
-  const {
-    loginData,
-    setLoginData,
-    setLoginPending,
-    setLoggedIn,
-    loginFailMessage,
-    setLoginFailMessage,
-  } = useLoginContext();
-
-  const { registerSuccessMessageVisible, setRegisterSuccessMessageVisible } =
-    useRegisterContext();
+  const [loginData, setLoginData] = useState({});
+  const [loginPending, setLoginPending] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [loginFailMessage, setLoginFailMessage] = useState('');
+  const [token, setToken] = useState(null);
 
   const navigate = useNavigate();
 
@@ -62,7 +51,6 @@ const Login = ({ toggleForm }) => {
     if (reason === "clickaway") {
       return;
     }
-    setRegisterSuccessMessageVisible(false);
   };
 
   const handleSubmit = async (e) => {
@@ -97,12 +85,18 @@ const Login = ({ toggleForm }) => {
     setLoginFailMessage(null);
   }, []);
 
+  useEffect(() => {
+    if (loggedIn) {
+      // Perform some action
+    }
+  }, [loggedIn]);
+
   return (
     <LoginBox>
       <Box width="100%">
         <Typography variant="h5">
           <Snackbar
-            open={registerSuccessMessageVisible}
+            open={false}
             autoHideDuration={12000}
             onClose={handleSnackbarClose}
           >
@@ -123,7 +117,7 @@ const Login = ({ toggleForm }) => {
             size="small"
             variant="outlined"
             name="email"
-            value={loginData.email}
+            value={loginData?.email || ""}
             onChange={handleChange}
             label="Email address"
             type="email"
@@ -136,7 +130,7 @@ const Login = ({ toggleForm }) => {
             type="password"
             name="password"
             variant="outlined"
-            value={loginData.password}
+            value={loginData?.password || ""}
             onChange={handleChange}
             label="Password"
             autoComplete="off"
